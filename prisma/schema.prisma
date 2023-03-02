@@ -14,6 +14,7 @@ model Parent {
   address      String
   icon         Icon           @relation(fields: [icon_id], references: [id])
   icon_id      Int
+  birthday     DateTime
   dairies      Dairy[]
   childs       ChaildInfo[]
   ChatMessage  ChatMessage[]
@@ -35,32 +36,36 @@ model Icon {
 }
 
 model Dairy {
-  id              Int          @id @default(autoincrement())
-  user            Parent       @relation(fields: [user_id], references: [id])
-  user_id         String
-  body            String
-  emotion         Int
-  image_url       String?
-  tag             Tag[] // many to many
-  created_at      DateTime     @default(now())
-  bot_response    BotResponse? @relation(fields: [bot_response_id], references: [id]) //AIコメントが付かないものもある
-  bot_response_id Int
+  id                Int             @id @default(autoincrement())
+  user              Parent          @relation(fields: [user_id], references: [id])
+  user_id           String
+  body              String
+  emotion           Int
+  image_url         String?
+  tag               Tag[] // many to many
+  created_at        DateTime        @default(now())
+  bot_response      BotResponse?    @relation(fields: [bot_response_type], references: [type]) //AIコメントが付かないものもある
+  bot_response_type BotResponseType
 }
 
 model BotResponse {
-  id      Int     @id @default(autoincrement())
-  type    String
+  type    BotResponseType @id
   comment String
   pattern Int?
   link    String?
   Dairy   Dairy[]
 }
 
+enum BotResponseType {
+  NOT_POSTED
+  USER_RECOMMENDATION
+  ADMINISTRATIVE_SUPPORT_RECOMMENDATION
+}
+
 model Tag {
-  id       Int        @id @default(autoincrement())
+  id       String     @id
   dairy    Dairy[] // many to many
   matching Matching[] // many to many
-  text     String
 }
 
 model Matching {
