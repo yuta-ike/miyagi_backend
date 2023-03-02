@@ -2,8 +2,6 @@
 
 ### 1. Download example and install dependencies
 
-Install npm dependencies:
-
 ```
 yarn install
 ```
