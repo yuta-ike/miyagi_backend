@@ -8,23 +8,22 @@ generator client {
 }
 
 model Parent {
-  id              Int            @id @default(autoincrement())
-  name            String
-  nickname        String
-  address         String
-  subscription_id String
-  icon            Icon           @relation(fields: [icon_id], references: [id])
-  icon_id         Int
-  dairies         Dairy[]
-  childs          ChaildInfo[]
-  ChatMessage     ChatMessage[]
-  MatchingUser    MatchingUser[]
+  id           String         @id //サブスクリプションID
+  name         String
+  nickname     String
+  address      String
+  icon         Icon           @relation(fields: [icon_id], references: [id])
+  icon_id      Int
+  dairies      Dairy[]
+  childs       ChaildInfo[]
+  ChatMessage  ChatMessage[]
+  MatchingUser MatchingUser[]
 }
 
 model ChaildInfo {
   id        Int      @id @default(autoincrement())
   parent    Parent   @relation(fields: [parent_id], references: [id])
-  parent_id Int
+  parent_id String
   name      String
   barthday  DateTime
 }
@@ -38,7 +37,7 @@ model Icon {
 model Dairy {
   id              Int          @id @default(autoincrement())
   user            Parent       @relation(fields: [user_id], references: [id])
-  user_id         Int
+  user_id         String
   body            String
   emotion         Int
   image_url       String?
@@ -76,13 +75,13 @@ model MatchingUser {
   matching      Matching @relation(fields: [matching_id], references: [id])
   matching_id   Int
   match_user    Parent   @relation(fields: [match_user_id], references: [id])
-  match_user_id Int
+  match_user_id String
 }
 
 model ChatMessage {
   id           Int      @id @default(autoincrement())
   send_user    Parent   @relation(fields: [send_user_id], references: [id])
-  send_user_id Int
+  send_user_id String
   matching     Matching @relation(fields: [matching_id], references: [id])
   matching_id  Int
   text         String

@@ -1,6 +1,6 @@
-import { Prisma, PrismaClient } from "@prisma/client";
 import express from "express";
 import cors from "cors";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const app = express();
@@ -10,145 +10,86 @@ app.use(cors());
 const port = process.env.PORT ?? 3000;
 
 app.use(express.json());
+app.post(`/dairy`, async (req, res) => {
 
-app.post(`/signup`, async (req, res) => {
-  const { name, email, posts } = req.body;
-
-  const postData = posts?.map((post: Prisma.PostCreateInput) => {
-    return { title: post?.title, content: post?.content };
-  });
-
-  const result = await prisma.user.create({
+  const { tags, body, emotion } = req.body;
+  const result = await prisma.dairy.create({
     data: {
-      name,
-      email,
-      posts: {
-        create: postData,
-      },
+      tag: tags,
+      body,
+      emotion,
+      user_id: req.headers.authorization as string,
+      bot_response_id: 1,
     },
   });
   res.json(result);
 });
 
-app.post(`/post`, async (req, res) => {
-  const { title, content, authorEmail } = req.body;
-  const result = await prisma.post.create({
-    data: {
-      title,
-      content,
-      author: { connect: { email: authorEmail } },
-    },
-  });
-  res.json(result);
-});
 
-app.put("/post/:id/views", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const post = await prisma.post.update({
-      where: { id: Number(id) },
-      data: {
-        viewCount: {
-          increment: 1,
-        },
-      },
-    });
-
-    res.json(post);
-  } catch (error) {
-    res.json({ error: `Post with ID ${id} does not exist in the database` });
-  }
-});
-
-app.put("/publish/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const postData = await prisma.post.findUnique({
-      where: { id: Number(id) },
-      select: {
-        published: true,
-      },
-    });
-
-    const updatedPost = await prisma.post.update({
-      where: { id: Number(id) || undefined },
-      data: { published: !postData?.published },
-    });
-    res.json(updatedPost);
-  } catch (error) {
-    res.json({ error: `Post with ID ${id} does not exist in the database` });
-  }
-});
-
-app.delete(`/post/:id`, async (req, res) => {
-  const { id } = req.params;
-  const post = await prisma.post.delete({
-    where: {
-      id: Number(id),
-    },
-  });
-  res.json(post);
-});
-
-app.get("/users", async (req, res) => {
-  const users = await prisma.user.findMany();
-  res.json({ users: 4 });
-});
-
-app.get("/user/:id/drafts", async (req, res) => {
-  const { id } = req.params;
-
-  const drafts = await prisma.user
-    .findUnique({
+app.get("/dairy/:date", async (req, res) => {
+  const { date } = req.params;
+  const target = new Date(date)
+  const dairys = await prisma.dairy.findMany({
       where: {
-        id: Number(id),
+        user_id: req.headers.authorization as string,
+        created_at: target,
       },
-    })
-    .posts({
-      where: { published: false },
     });
 
-  res.json(drafts);
+  res.json(dairys);
 });
 
-app.get(`/post/:id`, async (req, res) => {
-  const { id }: { id?: string } = req.params;
+// app.get(`/calendar`, async (req, res) => {
+//   const data = await prisma.dairy.findMany({
+//     where: { id: Number(id) },
+//   });
 
-  const post = await prisma.post.findUnique({
-    where: { id: Number(id) },
-  });
-  res.json(post);
-});
+//   res.json(data);
+// });
 
-app.get("/feed", async (req, res) => {
-  const { searchString, skip, take, orderBy } = req.query;
-
-  const or: Prisma.PostWhereInput = searchString
-    ? {
-        OR: [
-          { title: { contains: searchString as string } },
-          { content: { contains: searchString as string } },
+app.get("/user-recommend", async (req, res) => {
+  res.json({
+    "tags": [
+      "string"
+    ],
+    "users": [
+      {
+        "nickname": "string",
+        "ageDecades": 0,
+        "postedTags": [
+          {
+            "tag": "string",
+            "count": 0
+          }
         ],
+        "matchingId": "string"
       }
-    : {};
-
-  const posts = await prisma.post.findMany({
-    where: {
-      published: true,
-      ...or,
-    },
-    include: { author: true },
-    take: Number(take) || undefined,
-    skip: Number(skip) || undefined,
-    orderBy: {
-      updatedAt: orderBy as Prisma.SortOrder,
-    },
+    ]
   });
-
-  res.json(posts);
 });
+
+app.get("/bot/home", async (req, res) => {
+  res.json({
+    "botResponse": {
+    "type": "NOT_POSTED",
+    "comment": "string",
+    "link": "http://example.com"
+    }
+    });
+});
+
+app.post("/chat", async (req, res) => {
+  res.json({
+    "user": {
+      "nickname": "string"
+    },
+    "tags": [
+      "string"
+    ]
+  });
+});
+
+
 
 const server = app.listen(port, () =>
   console.log(`
