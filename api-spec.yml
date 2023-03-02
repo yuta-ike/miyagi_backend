@@ -75,28 +75,30 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  date:
-                    type: string
-                    format: date
-                    example: "2022-03-03"
-                  emotion:
-                    $ref: "#/components/schemas/Emotion"
-                  event:
-                    type: object
-                    required:
-                      - name
-                      - imageUrl
-                    properties:
-                      name:
-                        type: string
-                      imageUrl:
-                        type: string
-                required:
-                  - date
-                  - emotion
-                  - event
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                      example: "2022-03-03"
+                    emotion:
+                      $ref: "#/components/schemas/Emotion"
+                    event:
+                      type: object
+                      required:
+                        - name
+                        - imageUrl
+                      properties:
+                        name:
+                          type: string
+                        imageUrl:
+                          type: string
+                  required:
+                    - date
+                    - emotion
+                    - event
   /user-recommend:
     get:
       summary: おすすめの相談先ユーザーを取得
