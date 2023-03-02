@@ -1,6 +1,6 @@
 ## Getting started
 
-### 1. Download example and install dependencies
+### 1.install
 
 ```
 yarn
