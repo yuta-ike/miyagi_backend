@@ -1,6 +1,6 @@
 ## Getting started
 
-### 1.install
+### 1.Install
 
 ```
 yarn
