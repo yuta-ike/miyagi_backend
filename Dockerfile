@@ -12,9 +12,9 @@ COPY ["package.json", "yarn.lock", "tsconfig.json", "./"]
 COPY . .
 
 # Installs all packages
-RUN yarn install
+RUN yarn install && yarn generate
 
 EXPOSE 8000
 
 # Runs the dev npm script to build & start the server
-CMD yarn migrate:dev & yarn dev
+CMD yarn migrate:deploy && yarn dev

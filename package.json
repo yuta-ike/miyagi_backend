@@ -9,6 +9,7 @@
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:status": "prisma migrate status",
+    "seed": "ts-node ./prisma/seed.ts",
     "generate": "prisma generate",
     "gen-doc": "redocly build-docs api-spec.yml -o docs/api-spec.html"
   },
