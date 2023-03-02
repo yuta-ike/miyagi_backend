@@ -1,0 +1,326 @@
+openapi: 3.1.0
+x-stoplight:
+  id: 9opr9zv5wx1d0
+info:
+  title: miyagi-api
+  version: "1.0"
+servers:
+  - url: http://localhost:3000
+paths:
+  /diary:
+    parameters: []
+    post:
+      summary: 日記の投稿
+      operationId: post-diary
+      responses:
+        "200":
+          $ref: "#/components/responses/Ok"
+      description: 日記の投稿
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tags:
+                  type: array
+                  items:
+                    type: string
+                body:
+                  type: string
+                emotion:
+                  $ref: "#/components/schemas/Emotion"
+              required:
+                - tags
+                - body
+                - emotion
+        description: ""
+  /diary/{date}:
+    parameters:
+      - schema:
+          type: string
+          format: date
+          example: "2022-03-03"
+        name: date
+        in: path
+        required: true
+        description: 日付
+    get:
+      summary: 日記の取得
+      tags: []
+      responses: {}
+      operationId: get-diary-detail
+      description: 特定の日付の日記を取得
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                diaries:
+                  type: array
+                  items:
+                    $ref: "#/components/schemas/Diary"
+              required:
+                - diaries
+  /calendar:
+    get:
+      summary: カレンダー情報の取得
+      tags: []
+      operationId: get-calendar
+      description: カレンダー情報の取得
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  date:
+                    type: string
+                    format: date
+                    example: "2022-03-03"
+                  emotion:
+                    $ref: "#/components/schemas/Emotion"
+                  event:
+                    type: object
+                    required:
+                      - name
+                      - imageUrl
+                    properties:
+                      name:
+                        type: string
+                      imageUrl:
+                        type: string
+                required:
+                  - date
+                  - emotion
+                  - event
+  /user-recommend:
+    get:
+      summary: おすすめの相談先ユーザーを取得
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  tags:
+                    type: array
+                    items:
+                      type: string
+                  users:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        nickname:
+                          type: string
+                        ageDecades:
+                          type: integer
+                        postedTags:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              tag:
+                                type: string
+                              count:
+                                type: integer
+                            required:
+                              - tag
+                              - count
+                        matchingId:
+                          type: string
+                      required:
+                        - nickname
+                        - ageDecades
+                        - postedTags
+                        - matchingId
+                required:
+                  - tags
+                  - users
+      operationId: get-user-recommend
+      description: ""
+      x-extension-1: null
+  /bot/home:
+    get:
+      summary: HOME画面のAIの発言を取得
+      tags: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  botResponse:
+                    $ref: "#/components/schemas/BotResponse"
+                required:
+                  - botResponse
+      operationId: get-bot-home
+      description: HOME表示ようのAIの発言を取得
+  /chat:
+    post:
+      summary: チャットを開始する
+      operationId: start-chat
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    required:
+                      - nickname
+                    properties:
+                      nickname:
+                        type: string
+                  tags:
+                    type: array
+                    description: 相談するタグ
+                    items:
+                      type: string
+                required:
+                  - user
+                  - tags
+      description: チャットを開始する
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                matchingId:
+                  type: string
+              required:
+                - matchingId
+components:
+  schemas:
+    User:
+      title: User
+      type: object
+      description: ""
+      examples:
+        - id: 142
+          firstName: Alice
+          lastName: Smith
+          email: alice.smith@gmail.com
+          dateOfBirth: "1997-10-31"
+          emailVerified: true
+          signUpDate: "2019-08-24"
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the given user.
+        firstName:
+          type: string
+        lastName:
+          type: string
+        email:
+          type: string
+          format: email
+        dateOfBirth:
+          type: string
+          format: date
+          example: "1997-10-31"
+        emailVerified:
+          type: boolean
+          description: Set to true if the user's email has been verified.
+        createDate:
+          type: string
+          format: date
+          description: The date that the user was created.
+      required:
+        - id
+        - firstName
+        - lastName
+        - email
+        - emailVerified
+    Emotion:
+      title: Emotion
+      x-stoplight:
+        id: durhsbvhajl7g
+      type: integer
+      enum:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+      description: ""
+    Diary:
+      title: Diary
+      x-stoplight:
+        id: u60eb8kmvkmt8
+      type: object
+      properties:
+        id:
+          type: string
+        body:
+          type: string
+        emotion:
+          $ref: "#/components/schemas/Emotion"
+        createdAt:
+          type: string
+          format: date-time
+        tags:
+          type: array
+          items:
+            type: string
+        botResponse:
+          $ref: "#/components/schemas/BotResponse"
+      required:
+        - id
+        - body
+        - emotion
+        - createdAt
+        - tags
+    BotResponse:
+      title: BotResponse
+      x-stoplight:
+        id: dnzq5gx22j4j7
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - NOT_POSTED
+            - USER_RECOMMENDATION
+            - ADMINISTRATIVE_SUPPORT_RECOMMENDATION
+            - LOADING
+        comment:
+          type: string
+        link:
+          type: string
+          format: uri
+      required:
+        - type
+        - comment
+  responses:
+    Ok:
+      description: Example response
+      content:
+        application/json:
+          schema:
+            properties:
+              id:
+                type: string
+        application/xml:
+          schema:
+            type: object
+            properties:
+              result:
+                type: string
+                enum:
+                  - ok
+            required:
+              - result
