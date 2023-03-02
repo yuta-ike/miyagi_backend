@@ -7,21 +7,78 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+model Parent {
+  id              Int           @id @default(autoincrement())
+  name            String
+  nickname        String
+  address         String
+  subscription_id String
+  icon            Icon          @relation(fields: [icon_id], references: [id])
+  icon_id         Int
+  dairies         Dairy[]
+  childs          ChaildInfo[]
+  ChatMessage     ChatMessage[]
+  ChatUser        ChatUser[]
 }
 
-model Post {
+model ChaildInfo {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  viewCount Int      @default(0)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  parent    Parent   @relation(fields: [parent_id], references: [id])
+  parent_id Int
+  name      String
+  barthday  DateTime
+}
+
+model Icon {
+  id   Int      @id @default(autoincrement())
+  user Parent[]
+}
+
+model Dairy {
+  id            Int        @id @default(autoincrement())
+  user          Parent     @relation(fields: [user_id], references: [id])
+  user_id       Int
+  text          String
+  tag           Tag[] // many to many
+  created_at    DateTime   @default(now())
+  ai_comment    AIComment? @relation(fields: [ai_comment_id], references: [id]) //AIコメントが付かないものもある
+  ai_comment_id Int
+}
+
+model AIComment {
+  id      Int     @id @default(autoincrement())
+  type    String
+  text    String
+  pattern Int?
+  link    String?
+  Dairy   Dairy[]
+}
+
+model Tag {
+  id    Int        @id @default(autoincrement())
+  dairy Dairy[] // many to many
+  room  ChatRoom[] // many to many
+  text  String
+}
+
+model ChatRoom {
+  id       Int        @id @default(autoincrement())
+  ChatUser ChatUser[]
+  Tag      Tag[] //  many to many
+}
+
+model ChatUser {
+  id           Int      @id @default(autoincrement())
+  room         ChatRoom @relation(fields: [room_id], references: [id])
+  room_id      Int
+  join_user    Parent   @relation(fields: [join_user_id], references: [id])
+  join_user_id Int
+}
+
+model ChatMessage {
+  id           Int      @id @default(autoincrement())
+  send_user    Parent   @relation(fields: [send_user_id], references: [id])
+  send_user_id Int
+  text         String
+  created_at   DateTime @default(now())
 }
