@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "ts-node-dev --respawn --exit-child src/index.ts",
     "build": "yarn migrate:deploy && tsc -p ./tsconfig.json",
     "start": "node dist/index.js",
     "migrate:dev": "prisma migrate dev",
@@ -22,6 +22,7 @@
     "@types/node": "18.14.1",
     "prisma": "4.10.1",
     "ts-node": "10.9.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "4.9.5"
   },
   "prisma": {

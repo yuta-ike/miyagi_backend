@@ -94,7 +94,7 @@ app.delete(`/post/:id`, async (req, res) => {
 
 app.get("/users", async (req, res) => {
   const users = await prisma.user.findMany();
-  res.json(users);
+  res.json({ users: 4 });
 });
 
 app.get("/user/:id/drafts", async (req, res) => {
