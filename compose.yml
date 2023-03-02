@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  app:
+    # image: node:16
+    build: .
+    environment:
+      - DATABASE_URL=postgres://postgres:password@db:5432/miyagi
+    tty: true
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      - db
+  # api:
+  #   container_name: api
+  #   restart: always
+  #   build: .
+  #   ports:
+  #     - ${PORT}:${PORT}
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #   - .:/usr/src/app
+  db:
+    image: postgres:15
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: miyagi
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
