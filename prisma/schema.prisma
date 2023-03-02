@@ -8,17 +8,17 @@ generator client {
 }
 
 model Parent {
-  id              Int           @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   name            String
   nickname        String
   address         String
   subscription_id String
-  icon            Icon          @relation(fields: [icon_id], references: [id])
+  icon            Icon           @relation(fields: [icon_id], references: [id])
   icon_id         Int
   dairies         Dairy[]
   childs          ChaildInfo[]
   ChatMessage     ChatMessage[]
-  ChatUser        ChatUser[]
+  MatchingUser    MatchingUser[]
 }
 
 model ChaildInfo {
@@ -35,50 +35,54 @@ model Icon {
 }
 
 model Dairy {
-  id            Int        @id @default(autoincrement())
-  user          Parent     @relation(fields: [user_id], references: [id])
-  user_id       Int
-  text          String
-  tag           Tag[] // many to many
-  created_at    DateTime   @default(now())
-  ai_comment    AIComment? @relation(fields: [ai_comment_id], references: [id]) //AIコメントが付かないものもある
-  ai_comment_id Int
+  id              Int          @id @default(autoincrement())
+  user            Parent       @relation(fields: [user_id], references: [id])
+  user_id         Int
+  body            String
+  emotion         Int
+  tag             Tag[] // many to many
+  created_at      DateTime     @default(now())
+  bot_response    BotResponse? @relation(fields: [bot_response_id], references: [id]) //AIコメントが付かないものもある
+  bot_response_id Int
 }
 
-model AIComment {
+model BotResponse {
   id      Int     @id @default(autoincrement())
   type    String
-  text    String
+  comment String
   pattern Int?
   link    String?
   Dairy   Dairy[]
 }
 
 model Tag {
-  id    Int        @id @default(autoincrement())
-  dairy Dairy[] // many to many
-  room  ChatRoom[] // many to many
-  text  String
-}
-
-model ChatRoom {
   id       Int        @id @default(autoincrement())
-  ChatUser ChatUser[]
-  Tag      Tag[] //  many to many
+  dairy    Dairy[] // many to many
+  matching Matching[] // many to many
+  text     String
 }
 
-model ChatUser {
-  id           Int      @id @default(autoincrement())
-  room         ChatRoom @relation(fields: [room_id], references: [id])
-  room_id      Int
-  join_user    Parent   @relation(fields: [join_user_id], references: [id])
-  join_user_id Int
+model Matching {
+  id          Int            @id @default(autoincrement())
+  MachingUser MatchingUser[]
+  Tag         Tag[] //  many to many
+  ChatMessage ChatMessage[]
+}
+
+model MatchingUser {
+  id            Int      @id @default(autoincrement())
+  matching      Matching @relation(fields: [matching_id], references: [id])
+  matching_id   Int
+  match_user    Parent   @relation(fields: [match_user_id], references: [id])
+  match_user_id Int
 }
 
 model ChatMessage {
   id           Int      @id @default(autoincrement())
   send_user    Parent   @relation(fields: [send_user_id], references: [id])
   send_user_id Int
+  matching     Matching @relation(fields: [matching_id], references: [id])
+  matching_id  Int
   text         String
   created_at   DateTime @default(now())
 }
