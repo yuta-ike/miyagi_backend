@@ -30,8 +30,9 @@ model ChaildInfo {
 }
 
 model Icon {
-  id   Int      @id @default(autoincrement())
-  user Parent[]
+  id        Int      @id @default(autoincrement())
+  image_url String
+  user      Parent[]
 }
 
 model Dairy {
@@ -40,6 +41,7 @@ model Dairy {
   user_id         Int
   body            String
   emotion         Int
+  image_url       String?
   tag             Tag[] // many to many
   created_at      DateTime     @default(now())
   bot_response    BotResponse? @relation(fields: [bot_response_id], references: [id]) //AIコメントが付かないものもある
