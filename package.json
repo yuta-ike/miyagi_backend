@@ -1,9 +1,15 @@
 {
   "name": "rest-express",
   "version": "1.0.0",
-  "license": "MIT",
+  "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts"
+    "dev": "ts-node src/index.ts",
+    "build": "yarn migrate:deploy && tsc -p ./tsconfig.json",
+    "start": "node dist/index.js",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate:status": "prisma migrate status",
+    "generate": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "4.10.1",
