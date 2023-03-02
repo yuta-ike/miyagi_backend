@@ -6,7 +6,7 @@ FROM node:18
 WORKDIR /usr/src/app
 
 # Copies package.json, package-lock.json, tsconfig.json, .env to the root of WORKDIR
-COPY ["package.json", "yarn.lock", "tsconfig.json", ".env", "./"]
+COPY ["package.json", "yarn.lock", "tsconfig.json", "./"]
 
 # Copies everything in the src directory to WORKDIR/src
 COPY . .
