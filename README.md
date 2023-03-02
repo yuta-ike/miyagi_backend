@@ -1,40 +1,12 @@
-# REST API Example
-
-This example shows how to implement a **REST API with TypeScript** using [Express](https://expressjs.com/) and [Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client). The example uses an SQLite database file with some initial dummy data which you can find at [`./prisma/dev.db`](./prisma/dev.db).
-
 ## Getting started
 
 ### 1. Download example and install dependencies
 
-Download this example:
-
-```
-npx try-prisma --template typescript/rest-express
-```
-
 Install npm dependencies:
 
 ```
-cd rest-express
 yarn install
 ```
-
-<details><summary><strong>Alternative:</strong> Clone the entire repo</summary>
-
-Clone this repository:
-
-```
-git clone git@github.com:prisma/prisma-examples.git --depth=1
-```
-
-Install npm dependencies:
-
-```
-cd prisma-examples/typescript/rest-express
-yarn install
-```
-
-</details>
 
 ### 2. Create and seed the database
 
