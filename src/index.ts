@@ -135,14 +135,14 @@ app.get("/diary/:date", async (req, res) => {
 app.get(`/calendar`, async (req, res) => {
   const today = new Date();
   const tomorrow = new Date();
-  today.setHours(0); //0時
+  today.setHours(9); //UTCからの時差分：9時間
   today.setMinutes(0); //0分
   today.setSeconds(0); //0秒
-  tomorrow.setHours(0);
+  tomorrow.setHours(9);//UTCからの時差分：9時間
   tomorrow.setMinutes(0);
   tomorrow.setSeconds(0);
-  today.setDate(today.getDate() + 1)
-  tomorrow.setDate(tomorrow.getDate() + 2);
+  // today.setDate(today.getDate() + 1)//Timezoneをごまかすために1日足している　*要対策*
+  tomorrow.setDate(tomorrow.getDate() + 1);
   const data = new Array();
   for (let i = 0; i < 30; i++) {
     //30日分まで遡って取得
