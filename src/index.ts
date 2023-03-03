@@ -133,15 +133,14 @@ app.get("/diary/:date", async (req, res) => {
 });
 
 app.get(`/calendar`, async (req, res) => {
-  //prismaでは他の形式からDateオブジェクトに変換するとTZが強制的にUTCになる。子の仕様を変えるのがムズイので以下のように対処。
+  //prismaでは他の形式からDateオブジェクトに変換するとTZが強制的にUTCになる。
   const today = new Date();
   const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1);//マージンで+1日
-  tomorrow.setDate(tomorrow.getDate() + 2);//マージンで+1日
-  today.setHours(-9); //UTCからの時差分を打ち消し：-9時間
+  tomorrow.setDate(tomorrow.getDate() + 1);//翌日+1日
+  today.setHours(0); 
   today.setMinutes(0); //0分に初期化
   today.setSeconds(0); //0秒に初期化
-  tomorrow.setHours(-9);//UTCからの時差分を打ち消し：-9時間
+  tomorrow.setHours(0);
   tomorrow.setMinutes(0);//0分に初期化
   tomorrow.setSeconds(0);//0秒に初期化
   const data = new Array();
@@ -156,8 +155,9 @@ app.get(`/calendar`, async (req, res) => {
         },
       },
       orderBy: { created_at: "desc" }, //最新の投稿からEmotionを取得
-      select: { emotion: true },
+      // select: { emotion: true },
     });
+    console.log(dairy);
     const formatted_date =
       today.getFullYear() +
       "-" +
