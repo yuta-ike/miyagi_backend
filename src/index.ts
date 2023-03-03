@@ -136,17 +136,18 @@ app.get(`/calendar`, async (req, res) => {
       select: { emotion: true },
     })
     const parent = await prisma.parent.findUnique({
-      where: { id: req.headers.authorization as string},
+      where: { id: req.headers.authorization as string },
       select: { child_birthday: true },
     })
-    
+
+
     const formatted_date = today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-" + ("0" + today.getDate()).slice(-2)
-    
+
     data.push(
       {
         "date": formatted_date,
         "emotion": dairy?.emotion,
-        "event": "誕生日"
+        "event": parent?.child_birthday.getTime() == today.getTime() ? "誕生日" : undefined
       })
     today.setDate(today.getDate() - 1);
     yesterday.setDate(yesterday.getDate() - 1);
