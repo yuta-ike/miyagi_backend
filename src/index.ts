@@ -74,7 +74,7 @@ app.get("/dairy/:date", async (req, res) => {
     parseInt(date.slice(0, 4), 10),
     parseInt(date.slice(5, 7), 10) - 1,
     parseInt(date.slice(8, 10), 10)
-  );//表示する日付はこっち
+  ); //表示する日付はこっち
   const target2 = new Date(
     parseInt(date.slice(0, 4), 10),
     parseInt(date.slice(5, 7), 10) - 1,
@@ -85,8 +85,8 @@ app.get("/dairy/:date", async (req, res) => {
       user_id: req.headers.authorization as string,
       created_at: {
         gte: target,
-        lt:  target2,
-      }
+        lt: target2,
+      },
     },
   });
 
@@ -94,10 +94,10 @@ app.get("/dairy/:date", async (req, res) => {
 });
 
 app.get(`/calendar`, async (req, res) => {
-  const data = await prisma.dairy.findMany({
-    where: { id: Number(id) },
-  });
-  res.json(data);
+  // const data = await prisma.dairy.findMany({
+  //   where: { id: Number(id) },
+  // });
+  // res.json(data);
 });
 
 app.get("/user-recommend", async (req, res) => {
