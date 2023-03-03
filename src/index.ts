@@ -52,11 +52,16 @@ app.post("/sign_up", async (req, res) => {
   });
 
   if (child_name && child_birth) {
+    const date = new Date(
+      parseInt(child_birth.slice(0, 4), 10),
+      parseInt(child_birth.slice(5, 7), 10) - 1,
+      parseInt(child_birth.slice(8, 10), 10)
+    ); //表示する日付はこっち
     await prisma.chaildInfo.create({
       data: {
         parent_id: subscriptionId,
         name: child_name,
-        barthday: child_birth,
+        barthday: date,
       },
     });
   }
