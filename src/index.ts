@@ -19,7 +19,7 @@ app.get("/health", (req, res) => {
 });
 
 app.post("/sign_up", async (req, res) => {
-  const { name, address, birthday, iconId, nickname } = req.body;
+  const { name, address, birthday, child_name, child_birthday, iconId, nickname } = req.body;
   const subscriptionId = req.headers.authorization as string;
   await prisma.parent.upsert({
     where: {
@@ -31,6 +31,8 @@ app.post("/sign_up", async (req, res) => {
       name,
       birthday,
       address,
+      child_name,
+      child_birthday,
       icon_id: iconId,
     },
     update: {
@@ -38,6 +40,8 @@ app.post("/sign_up", async (req, res) => {
       name,
       birthday,
       address,
+      child_name,
+      child_birthday,
       icon_id: iconId,
     },
   });
@@ -128,18 +132,24 @@ app.get(`/calendar`, async (req, res) => {
           lt: today,
         },
       },
-      orderBy:{created_at:"desc"},//最新の投稿からEmotionを取得
+      orderBy: { created_at: "desc" },//最新の投稿からEmotionを取得
       select: { emotion: true },
     })
-    const formatted_date = today.getFullYear() + "-" +("0" + (today.getMonth()+1)).slice(-2) + "-" +("0" + today.getDate()).slice(-2)
+    const parent = await prisma.parent.findUnique({
+      where: { id: req.headers.authorization as string},
+      select: { child_birthday: true },
+    })
+    
+    const formatted_date = today.getFullYear() + "-" + ("0" + (today.getMonth() + 1)).slice(-2) + "-" + ("0" + today.getDate()).slice(-2)
+    
     data.push(
       {
         "date": formatted_date,
         "emotion": dairy?.emotion,
         "event": "誕生日"
       })
-      today.setDate(today.getDate() - 1);
-      yesterday.setDate(yesterday.getDate() - 1);
+    today.setDate(today.getDate() - 1);
+    yesterday.setDate(yesterday.getDate() - 1);
   }
   res.json(data);
 });
