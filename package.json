@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --exit-child src/index.ts",
     "build": "tsc -p ./tsconfig.json",
-    "start": "node ./dist/index.js",
+    "start": "node ./dist/src/index.js",
     "migrate:dev": "prisma migrate dev",
     "migrate:deploy": "prisma migrate deploy",
     "migrate:status": "prisma migrate status",
