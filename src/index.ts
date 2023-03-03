@@ -69,31 +69,36 @@ app.post(`/dairy`, async (req, res) => {
 });
 
 app.get("/dairy/:date", async (req, res) => {
-  console.log("AAAAAA");
   const { date } = req.params;
   const target = new Date(
     parseInt(date.slice(0, 4), 10),
     parseInt(date.slice(5, 7), 10) - 1,
     parseInt(date.slice(8, 10), 10)
+  );//表示する日付はこっち
+  const target2 = new Date(
+    parseInt(date.slice(0, 4), 10),
+    parseInt(date.slice(5, 7), 10) - 1,
+    parseInt(date.slice(8, 10), 10) + 1
   );
-  console.log(target);
   const dairys = await prisma.dairy.findMany({
     where: {
       user_id: req.headers.authorization as string,
-      created_at: target,
+      created_at: {
+        gte: target,
+        lt:  target2,
+      }
     },
   });
 
   res.json(dairys);
 });
 
-// app.get(`/calendar`, async (req, res) => {
-//   const data = await prisma.dairy.findMany({
-//     where: { id: Number(id) },
-//   });
-
-//   res.json(data);
-// });
+app.get(`/calendar`, async (req, res) => {
+  const data = await prisma.dairy.findMany({
+    where: { id: Number(id) },
+  });
+  res.json(data);
+});
 
 app.get("/user-recommend", async (req, res) => {
   res.json({
