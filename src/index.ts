@@ -141,7 +141,8 @@ app.get(`/calendar`, async (req, res) => {
   tomorrow.setHours(0);
   tomorrow.setMinutes(0);
   tomorrow.setSeconds(0);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setDate(today.getDate() + 1)
+  tomorrow.setDate(tomorrow.getDate() + 2);
   const data = new Array();
   for (let i = 0; i < 30; i++) {
     //30日分まで遡って取得
