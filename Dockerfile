@@ -12,8 +12,10 @@ COPY ["package.json", "yarn.lock", "tsconfig.json", "./"]
 COPY . .
 
 # Installs all packages
-RUN yarn install && yarn generate
+RUN yarn install && yarn generate && yarn build
+
+COPY ./dist ./dist
 
 EXPOSE 8000
 
-CMD yarn seed && yarn build && yarn start
+CMD yarn seed && yarn migrate:deploy && yarn start
