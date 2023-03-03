@@ -16,7 +16,4 @@ RUN yarn install && yarn generate
 
 EXPOSE 8000
 
-# Runs the dev npm script to build & start the server
-RUN yarn seed
-
-CMD yarn build && yarn start
+CMD yarn seed && yarn build && yarn start
