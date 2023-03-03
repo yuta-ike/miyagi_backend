@@ -239,9 +239,7 @@ app.get("/user-recommend", async (req, res) => {
 
   const result = await fetchRelatedUsers(subscriptionId);
 
-  res.json({
-    users: result,
-  });
+  res.json(result);
 });
 
 app.get("/bot/home", async (req, res) => {
@@ -270,7 +268,7 @@ app.get("/bot/home", async (req, res) => {
 
   const users = await fetchRelatedUsers(subscriptionId);
 
-  res.json({ botResponse: users ?? [] });
+  res.json({ botResponse: users?.users ?? [] });
 });
 
 app.post("/chat", async (req, res) => {

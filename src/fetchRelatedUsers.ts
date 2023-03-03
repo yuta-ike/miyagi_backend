@@ -96,5 +96,5 @@ export const fetchRelatedUsers = async (userId: string) => {
     });
   }
 
-  return userTags;
+  return { users: userTags, tags };
 };
