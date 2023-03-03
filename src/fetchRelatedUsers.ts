@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from "./lib/prisma";
 
 export const fetchRelatedUsers = async (userId: string) => {
   const recentDiary = await prisma.dairy.findFirst({
@@ -62,12 +61,24 @@ export const fetchRelatedUsers = async (userId: string) => {
   }[] = [];
 
   for (const user of usersWithTags) {
+    // 自分は除外
+    if (user.id === userId) {
+      continue;
+    }
     const tagCount: Record<string, number> = {};
+
+    let totalTagCount = 0;
 
     for (const { tag } of user.dairies.flat()) {
       for (const { id } of tag) {
         tagCount[id] = (tagCount[id] || 0) + 1;
+        totalTagCount += 1;
       }
+    }
+
+    // タグが一つも存在しないユーザーは弾く
+    if (totalTagCount < 1) {
+      continue;
     }
 
     const postedTags = Object.entries(tagCount).map(([id, count]) => ({
@@ -85,5 +96,5 @@ export const fetchRelatedUsers = async (userId: string) => {
     });
   }
 
-  return userTags;
+  return { users: userTags, tags };
 };

@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
-import axios from "axios";
 import { fetchRelatedUsers } from "./fetchRelatedUsers";
 import { fetchRelatedWords } from "./fetchRelatedWords";
 
@@ -255,22 +254,11 @@ app.post("/suggest-tags", async (req, res) => {
 // });
 
 app.get("/user-recommend", async (req, res) => {
-  res.json({
-    tags: ["string"],
-    users: [
-      {
-        nickname: "string",
-        ageDecades: 0,
-        postedTags: [
-          {
-            tag: "string",
-            count: 0,
-          },
-        ],
-        matchingId: "string",
-      },
-    ],
-  });
+  const subscriptionId = req.headers.authorization as string;
+
+  const result = await fetchRelatedUsers(subscriptionId);
+
+  res.json(result);
 });
 
 app.get("/bot/home", async (req, res) => {
@@ -299,7 +287,7 @@ app.get("/bot/home", async (req, res) => {
 
   const users = await fetchRelatedUsers(subscriptionId);
 
-  res.json({ botResponse: users ?? [] });
+  res.json({ botResponse: users?.users ?? [] });
 });
 
 app.post("/chat", async (req, res) => {
