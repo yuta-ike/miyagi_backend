@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 const app = express();
@@ -42,6 +42,19 @@ app.post("/sign_up", async (req, res) => {
 
   res.json({
     result: "ok",
+  });
+});
+
+app.get("/auth-state", async (req, res) => {
+  const subscriptionId = req.headers.authorization as string;
+  const parent = await prisma.parent.findUnique({
+    where: {
+      id: subscriptionId,
+    },
+  });
+
+  res.send({
+    authed: parent != null,
   });
 });
 
