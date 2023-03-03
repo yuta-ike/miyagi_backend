@@ -166,6 +166,7 @@ app.get(`/calendar`, async (req, res) => {
       where: { parent_id: req.headers.authorization as string },
       select: { barthday: true },
     });
+    console.log(child_info?.barthday.getDate() == today.getDate())
     data.push({
       date: formatted_date,
       emotion: dairy?.emotion,
