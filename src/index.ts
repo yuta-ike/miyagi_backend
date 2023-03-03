@@ -135,6 +135,7 @@ app.get("/diary/:date", async (req, res) => {
 app.get(`/calendar`, async (req, res) => {
   const today = new Date();
   const tomorrow = new Date();
+  console.log(today)
   today.setHours(9); //UTCからの時差分：9時間
   today.setMinutes(0); //0分
   today.setSeconds(0); //0秒
@@ -175,7 +176,6 @@ app.get(`/calendar`, async (req, res) => {
     today.setDate(today.getDate() - 1);
     tomorrow.setDate(tomorrow.getDate() - 1);
   }
-  console.log(data);
   console;
   res.json(data);
 });
