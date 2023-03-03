@@ -30,7 +30,7 @@ app.post("/sign_up", async (req, res) => {
   } = req.body;
   const subscriptionId = req.headers.authorization as string;
 
-  await prisma.parent.upsert({
+  await prisma.parent.upsert({//直した！
     where: {
       id: subscriptionId,
     },
