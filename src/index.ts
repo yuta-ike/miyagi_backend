@@ -24,7 +24,7 @@ app.post("/sign_up", async (req, res) => {
     address,
     birthday,
     child_name,
-    child_birthday,
+    child_birth,
     iconId,
     nickname,
   } = req.body;
@@ -51,12 +51,12 @@ app.post("/sign_up", async (req, res) => {
     },
   });
 
-  if (child_name && child_birthday) {
+  if (child_name && child_birth) {
     await prisma.chaildInfo.create({
       data: {
         parent_id: subscriptionId,
         name: child_name,
-        barthday: child_birthday,
+        barthday: child_birth,
       },
     });
   }
