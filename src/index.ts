@@ -137,10 +137,10 @@ app.get(`/calendar`, async (req, res) => {
   const today = new Date();
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  today.setHours(today.getHours() + 9); //UTCからの時差分：+9時間
+  today.setHours(-9); //UTCからの時差分：+9時間
   today.setMinutes(0); //0分に初期化
   today.setSeconds(0); //0秒に初期化
-  tomorrow.setHours(today.getHours() + 9);//UTCからの時差分：+9時間
+  tomorrow.setHours(-9);//UTCからの時差分：+9時間
   tomorrow.setMinutes(0);
   tomorrow.setSeconds(0);
   const data = new Array();
@@ -155,8 +155,9 @@ app.get(`/calendar`, async (req, res) => {
         },
       },
       orderBy: { created_at: "desc" }, //最新の投稿からEmotionを取得
-      select: { emotion: true },
+      // select: { emotion: true },
     });
+    console.log(dairy);
     const formatted_date =
       today.getFullYear() +
       "-" +
@@ -176,7 +177,6 @@ app.get(`/calendar`, async (req, res) => {
     today.setDate(today.getDate() - 1);
     tomorrow.setDate(tomorrow.getDate() - 1);
   }
-  console.log(data)
   console;
   res.json(data);
 });
