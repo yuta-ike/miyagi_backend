@@ -110,22 +110,22 @@ app.get("/diary/:date", async (req, res) => {
 
 app.get(`/calendar`, async (req, res) => {
   const today = new Date();
-  const yesterday = new Date();
+  const tomorrow = new Date();
   today.setHours(0);  //0時
   today.setMinutes(0);//0分
   today.setSeconds(0);//0秒
-  yesterday.setHours(0);
-  yesterday.setMinutes(0);
-  yesterday.setSeconds(0);
-  yesterday.setDate(yesterday.getDate() - 1);
+  tomorrow.setHours(0);
+  tomorrow.setMinutes(0);
+  tomorrow.setSeconds(0);
+  tomorrow.setDate(tomorrow.getDate() + 1);
   const data = new Array();
   for (let i = 0; i < 30; i++) {//30日分まで遡って取得
     const dairy = await prisma.dairy.findFirst({
       where: {
         user_id: req.headers.authorization as string,
         created_at: {
-          gte: yesterday,
-          lt: today,
+          gte: today,
+          lt: tomorrow,
         },
       },
       orderBy:{created_at:"desc"},//最新の投稿からEmotionを取得
@@ -139,8 +139,9 @@ app.get(`/calendar`, async (req, res) => {
         "event": "誕生日"
       })
       today.setDate(today.getDate() - 1);
-      yesterday.setDate(yesterday.getDate() - 1);
+      tomorrow.setDate(tomorrow.getDate() - 1);
   }
+  console
   res.json(data);
 });
 
