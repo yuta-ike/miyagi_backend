@@ -3,6 +3,7 @@ import cors from "cors";
 import { PrismaClient } from "@prisma/client";
 import axios from "axios";
 import { fetchRelatedUsers } from "./fetchRelatedUsers";
+import { fetchRelatedWords } from "./fetchRelatedWords";
 
 const prisma = new PrismaClient();
 const app = express();
@@ -62,17 +63,18 @@ app.get("/auth-state", async (req, res) => {
 
 app.post(`/diary`, async (req, res) => {
   const { tags, body, emotion } = req.body;
+
   const result = await prisma.dairy.create({
     data: {
       tag: {
-        connectOrCreate: {
+        connectOrCreate: tags.map((tag: string) => ({
           create: {
-            id: tags[0],
+            id: tag,
           },
           where: {
-            id: tags[0],
+            id: tag,
           },
-        },
+        })),
       },
       body,
       emotion,
@@ -111,15 +113,16 @@ app.get("/diary/:date", async (req, res) => {
 app.get(`/calendar`, async (req, res) => {
   const today = new Date();
   const tomorrow = new Date();
-  today.setHours(0);  //0時
-  today.setMinutes(0);//0分
-  today.setSeconds(0);//0秒
+  today.setHours(0); //0時
+  today.setMinutes(0); //0分
+  today.setSeconds(0); //0秒
   tomorrow.setHours(0);
   tomorrow.setMinutes(0);
   tomorrow.setSeconds(0);
   tomorrow.setDate(tomorrow.getDate() + 1);
   const data = new Array();
-  for (let i = 0; i < 30; i++) {//30日分まで遡って取得
+  for (let i = 0; i < 30; i++) {
+    //30日分まで遡って取得
     const dairy = await prisma.dairy.findFirst({
       where: {
         user_id: req.headers.authorization as string,
@@ -128,20 +131,24 @@ app.get(`/calendar`, async (req, res) => {
           lt: tomorrow,
         },
       },
-      orderBy:{created_at:"desc"},//最新の投稿からEmotionを取得
+      orderBy: { created_at: "desc" }, //最新の投稿からEmotionを取得
       select: { emotion: true },
-    })
-    const formatted_date = today.getFullYear() + "-" +("0" + (today.getMonth()+1)).slice(-2) + "-" +("0" + today.getDate()).slice(-2)
-    data.push(
-      {
-        "date": formatted_date,
-        "emotion": dairy?.emotion,
-        "event": "誕生日"
-      })
-      today.setDate(today.getDate() - 1);
-      tomorrow.setDate(tomorrow.getDate() - 1);
+    });
+    const formatted_date =
+      today.getFullYear() +
+      "-" +
+      ("0" + (today.getMonth() + 1)).slice(-2) +
+      "-" +
+      ("0" + today.getDate()).slice(-2);
+    data.push({
+      date: formatted_date,
+      emotion: dairy?.emotion,
+      event: "誕生日",
+    });
+    today.setDate(today.getDate() - 1);
+    tomorrow.setDate(tomorrow.getDate() - 1);
   }
-  console
+  console;
   res.json(data);
 });
 
@@ -149,18 +156,10 @@ app.post("/suggest-tags", async (req, res) => {
   const userId = req.headers.authorization as string;
   // 本文からの抜き出し
   const sentence = req.body.sentence;
-  const result = await axios.post(
-    "http://13.231.97.140",
-    {
-      sentence,
-    },
-    {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  const entries = Object.entries(result.data);
+
+  const relatedWords = await fetchRelatedWords(sentence);
+
+  const entries = Object.entries(relatedWords);
   entries.sort((a: any, b: any) => b[1] - a[1]);
   const retrievedTags = entries.map(([word]) => word);
 
@@ -281,7 +280,7 @@ app.get("/bot/home", async (req, res) => {
 
   const users = await fetchRelatedUsers(subscriptionId);
 
-  res.json(users ?? []);
+  res.json({ botResponse: users ?? [] });
 });
 
 app.post("/chat", async (req, res) => {

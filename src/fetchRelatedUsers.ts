@@ -52,6 +52,9 @@ export const fetchRelatedUsers = async (userId: string) => {
 
   const userTags: {
     userId: string;
+    nickname: string;
+    iconId: number;
+    ageDecades: number;
     postedTags: {
       tag: string;
       count: number;
@@ -74,6 +77,10 @@ export const fetchRelatedUsers = async (userId: string) => {
 
     userTags.push({
       userId: user.id,
+      iconId: user.icon_id,
+      nickname: user.nickname,
+      // TODO: set
+      ageDecades: 3,
       postedTags,
     });
   }
