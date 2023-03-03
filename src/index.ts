@@ -141,7 +141,6 @@ app.get(`/calendar`, async (req, res) => {
   tomorrow.setHours(9);//UTCからの時差分：9時間
   tomorrow.setMinutes(0);
   tomorrow.setSeconds(0);
-  // today.setDate(today.getDate() + 1)//Timezoneをごまかすために1日足している　*要対策*
   tomorrow.setDate(tomorrow.getDate() + 1);
   const data = new Array();
   for (let i = 0; i < 30; i++) {
