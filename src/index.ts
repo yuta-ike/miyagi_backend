@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
 import { PrismaClient } from "@prisma/client";
+import axios from "axios";
+import { fetchRelatedUsers } from "./fetchRelatedUsers";
 
 const prisma = new PrismaClient();
 const app = express();
@@ -113,6 +115,97 @@ app.get(`/calendar`, async (req, res) => {
   // res.json(data);
 });
 
+app.post("/suggest-tags", async (req, res) => {
+  const userId = req.headers.authorization as string;
+  // 本文からの抜き出し
+  const sentence = req.body.sentence;
+  const result = await axios.post(
+    "http://13.231.97.140",
+    {
+      sentence,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const entries = Object.entries(result.data);
+  entries.sort((a: any, b: any) => b[1] - a[1]);
+  const retrievedTags = entries.map(([word]) => word);
+
+  if (20 <= retrievedTags.length) {
+    return res.json(retrievedTags.slice(0, 20));
+  }
+
+  // 該当ユーザーが多く利用するタグ
+  const result2 = await prisma.tag.findMany({
+    where: {
+      dairy: {
+        some: {
+          user_id: userId,
+        },
+      },
+    },
+    orderBy: {
+      dairy: {
+        _count: "desc",
+      },
+    },
+  });
+  const mostUsedTags = result2.map((tag) => tag.id);
+
+  if (20 <= retrievedTags.length + mostUsedTags.length) {
+    return res.json([...retrievedTags, ...mostUsedTags].slice(0, 20));
+  }
+
+  // 全ユーザーが多く利用するタグ
+  const result3 = await prisma.tag.findMany({
+    select: {
+      id: true,
+    },
+    orderBy: {
+      dairy: {
+        _count: "desc", // 記事数が多い順に並び替え
+      },
+    },
+    distinct: ["id"], // タグ名が重複しないようにする
+  });
+
+  const popularTags = result3.map(({ id }) => id);
+
+  if (20 <= retrievedTags.length + mostUsedTags.length + popularTags.length) {
+    return res.json(
+      [...retrievedTags, ...mostUsedTags, ...popularTags].slice(0, 20)
+    );
+  }
+});
+
+// app.post("/add-mock", async (req, res) => {
+//   const subscriptionId = req.headers.authorization as string;
+//   for (let i = 0; i < 100; i++) {
+//     await prisma.dairy.create({
+//       data: {
+//         tag: {
+//           connectOrCreate: {
+//             create: {
+//               id: "tag" + 1,
+//             },
+//             where: {
+//               id: "tag" + 1,
+//             },
+//           },
+//         },
+//         body: "body" + i,
+//         emotion: 1,
+//         user_id: subscriptionId,
+//         bot_response_type: "NOT_POSTED",
+//       },
+//     });
+//   }
+//   res.send({ res: "ok" });
+// });
+
 app.get("/user-recommend", async (req, res) => {
   res.json({
     tags: ["string"],
@@ -133,13 +226,32 @@ app.get("/user-recommend", async (req, res) => {
 });
 
 app.get("/bot/home", async (req, res) => {
-  res.json({
-    botResponse: {
-      type: "NOT_POSTED",
-      comment: "string",
-      link: "http://example.com",
+  const subscriptionId = req.headers.authorization as string;
+
+  const recentDiary = await prisma.dairy.findFirst({
+    where: {
+      user_id: subscriptionId,
+    },
+    take: 1,
+    orderBy: {
+      created_at: "desc",
+    },
+    select: {
+      tag: true,
     },
   });
+
+  const tags = recentDiary?.tag.map(({ id }) => id) ?? [];
+
+  if (tags.length === 0) {
+    return res.json({
+      botResponse: null,
+    });
+  }
+
+  const users = await fetchRelatedUsers(subscriptionId);
+
+  res.json(users ?? []);
 });
 
 app.post("/chat", async (req, res) => {
