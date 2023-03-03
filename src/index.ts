@@ -126,6 +126,7 @@ app.get(`/calendar`, async (req, res) => {
           lt: today,
         },
       },
+      orderBy:{created_at:"desc"},//最新の投稿からEmotionを取得
       select: { emotion: true },
     })
     const formatted_date = today.getFullYear() + "-" +("0" + today.getMonth()).slice(-2) + "-" +("0" + today.getDate()).slice(-2)
