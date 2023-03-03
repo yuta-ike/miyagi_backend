@@ -14,7 +14,6 @@ COPY . .
 # Installs all packages
 RUN yarn install && yarn generate && yarn build
 
-COPY ./dist ./dist
 
 EXPOSE 8000
 
