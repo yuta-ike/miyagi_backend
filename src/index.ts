@@ -129,15 +129,12 @@ app.get(`/calendar`, async (req, res) => {
       orderBy:{created_at:"desc"},//最新の投稿からEmotionを取得
       select: { emotion: true },
     })
-    const formatted_date = today.getFullYear() + "-" +("0" + today.getMonth()).slice(-2) + "-" +("0" + today.getDate()).slice(-2)
+    const formatted_date = today.getFullYear() + "-" +("0" + today.getMonth()+1).slice(-2) + "-" +("0" + today.getDate()).slice(-2)
     data.push(
       {
         "date": formatted_date,
         "emotion": dairy?.emotion,
-        "event": {
-          "name": "誕生日",
-          "imageUrl": "string"
-        }
+        "event": "誕生日"
       })
       today.setDate(today.getDate() - 1);
       yesterday.setDate(yesterday.getDate() - 1);
