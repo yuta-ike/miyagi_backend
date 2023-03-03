@@ -15,8 +15,6 @@ model Parent {
   icon         Icon           @relation(fields: [icon_id], references: [id])
   icon_id      Int
   birthday     DateTime
-  child_name      String
-  child_birthday  DateTime
   dairies      Dairy[]
   childs       ChaildInfo[]
   ChatMessage  ChatMessage[]
