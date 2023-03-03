@@ -170,7 +170,7 @@ app.get(`/calendar`, async (req, res) => {
       date: formatted_date,
       emotion: dairy?.emotion,
       event:
-        child_info?.barthday.getTime() == today.getTime()
+        child_info?.barthday.getDate() == today.getDate()
           ? "誕生日"
           : undefined,
     });
