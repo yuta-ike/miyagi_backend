@@ -168,11 +168,14 @@ app.get(`/calendar`, async (req, res) => {
       where: { parent_id: req.headers.authorization as string },
       select: { barthday: true },
     });
-    const flg = (child_info?.barthday.getDate() == today.getDate());
+    console.log(child_info?.barthday.getDate() == today.getDate())
     data.push({
       date: formatted_date,
       emotion: dairy?.emotion,
-      event: flg ? "誕生日" : undefined,
+      event:
+        child_info?.barthday.getDate() == today.getDate()
+          ? "誕生日"
+          : undefined,
     });
     today.setDate(today.getDate() - 1);
     tomorrow.setDate(tomorrow.getDate() - 1);
