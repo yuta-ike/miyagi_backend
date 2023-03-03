@@ -176,6 +176,7 @@ app.get(`/calendar`, async (req, res) => {
     today.setDate(today.getDate() - 1);
     tomorrow.setDate(tomorrow.getDate() - 1);
   }
+  console.log(data)
   console;
   res.json(data);
 });
