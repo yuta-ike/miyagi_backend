@@ -9,10 +9,10 @@ async function main() {
       },
       create: {
         id: i,
-        image_url: `/emote_${i}.png`,
+        image_url: `/icon_${i}.png`,
       },
       update: {
-        image_url: `/emote_${i}.png`,
+        image_url: `/icon_${i}.png`,
       },
     });
   }

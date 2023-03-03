@@ -45,7 +45,7 @@ app.post("/sign_up", async (req, res) => {
   });
 });
 
-app.post(`/dairy`, async (req, res) => {
+app.post(`/diary`, async (req, res) => {
   const { tags, body, emotion } = req.body;
   const result = await prisma.dairy.create({
     data: {
@@ -68,7 +68,7 @@ app.post(`/dairy`, async (req, res) => {
   res.json(result);
 });
 
-app.get("/dairy/:date", async (req, res) => {
+app.get("/diary/:date", async (req, res) => {
   const { date } = req.params;
   const target = new Date(
     parseInt(date.slice(0, 4), 10),
