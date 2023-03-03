@@ -19,48 +19,51 @@ app.get("/health", (req, res) => {
 });
 
 app.post("/sign_up", async (req, res) => {
-  const { name, address, birthday, child_name, child_birthday, iconId, nickname } = req.body;
+  const {
+    name,
+    address,
+    birthday,
+    child_name,
+    child_birthday,
+    iconId,
+    nickname,
+  } = req.body;
   const subscriptionId = req.headers.authorization as string;
-  if (child_name && child_birthday) {
 
-    await prisma.parent.upsert({
-      where: {
-        id: subscriptionId,
-      },
-      create: {
-        id: subscriptionId,
-        nickname,
-        name,
-        birthday,
-        address,
-        icon_id: iconId,
-      },
-      update: {
-        nickname,
-        name,
-        birthday,
-        address,
-        icon_id: iconId,
-      },
-    });
+  await prisma.parent.upsert({
+    where: {
+      id: subscriptionId,
+    },
+    create: {
+      id: subscriptionId,
+      nickname,
+      name,
+      birthday,
+      address,
+      icon_id: iconId,
+    },
+    update: {
+      nickname,
+      name,
+      birthday,
+      address,
+      icon_id: iconId,
+    },
+  });
+
+  if (child_name && child_birthday) {
     await prisma.chaildInfo.create({
       data: {
         parent_id: subscriptionId,
         name: child_name,
         barthday: child_birthday,
-      }
+      },
     });
-    res.json({
-      result: "ok",
-    });
-  } else {
-    res.json({
-      result: "ng",
-    });
-
   }
 
-
+  res.json({
+    result: "ok",
+  });
 });
 app.get("/auth-state", async (req, res) => {
   const subscriptionId = req.headers.authorization as string;
@@ -156,12 +159,15 @@ app.get(`/calendar`, async (req, res) => {
       ("0" + today.getDate()).slice(-2);
     const child_info = await prisma.chaildInfo.findFirst({
       where: { parent_id: req.headers.authorization as string },
-      select: { barthday: true }
+      select: { barthday: true },
     });
     data.push({
       date: formatted_date,
       emotion: dairy?.emotion,
-      event: child_info?.barthday.getTime() == today.getTime() ? "誕生日" : undefined
+      event:
+        child_info?.barthday.getTime() == today.getTime()
+          ? "誕生日"
+          : undefined,
     });
     today.setDate(today.getDate() - 1);
     tomorrow.setDate(tomorrow.getDate() - 1);
