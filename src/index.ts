@@ -133,16 +133,16 @@ app.get("/diary/:date", async (req, res) => {
 });
 
 app.get(`/calendar`, async (req, res) => {
+  //prismaではDateオブジェクトのTZが強制的にUTCになる。prismaのTZを変えるのがムズイので以下のように対処。
   const today = new Date();
   const tomorrow = new Date();
-  console.log(today)
-  today.setHours(9); //UTCからの時差分：9時間
-  today.setMinutes(0); //0分
-  today.setSeconds(0); //0秒
-  tomorrow.setHours(9);//UTCからの時差分：9時間
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  today.setHours(today.getHours() + 9); //UTCからの時差分：+9時間
+  today.setMinutes(0); //0分に初期化
+  today.setSeconds(0); //0秒に初期化
+  tomorrow.setHours(today.getHours() + 9);//UTCからの時差分：+9時間
   tomorrow.setMinutes(0);
   tomorrow.setSeconds(0);
-  tomorrow.setDate(tomorrow.getDate() + 1);
   const data = new Array();
   for (let i = 0; i < 30; i++) {
     //30日分まで遡って取得
