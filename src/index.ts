@@ -94,10 +94,41 @@ app.get("/diary/:date", async (req, res) => {
 });
 
 app.get(`/calendar`, async (req, res) => {
-  // const data = await prisma.dairy.findMany({
-  //   where: { id: Number(id) },
-  // });
-  // res.json(data);
+  const today = new Date();
+  const yesterday = new Date();
+  today.setHours(0);  //0時
+  today.setMinutes(0);//0分
+  today.setSeconds(0);//0秒
+  yesterday.setHours(0);
+  yesterday.setMinutes(0);
+  yesterday.setSeconds(0);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const data = new Array();
+  for (let i = 0; i < 30; i++) {//30日分まで遡って取得
+    const dairy = await prisma.dairy.findFirst({
+      where: {
+        user_id: req.headers.authorization as string,
+        created_at: {
+          gte: yesterday,
+          lt: today,
+        },
+      },
+      select: { emotion: true },
+    })
+    const formatted_date = today.getFullYear() + "-" +("0" + today.getMonth()).slice(-2) + "-" +("0" + today.getDate()).slice(-2)
+    data.push(
+      {
+        "date": formatted_date,
+        "emotion": dairy?.emotion,
+        "event": {
+          "name": "誕生日",
+          "imageUrl": "string"
+        }
+      })
+      today.setDate(today.getDate() - 1);
+      yesterday.setDate(yesterday.getDate() - 1);
+  }
+  res.json(data);
 });
 
 app.get("/user-recommend", async (req, res) => {
